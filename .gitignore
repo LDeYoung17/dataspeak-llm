@@ -159,6 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 secrets.py
-app.py
 notebooks/.DS_Store
 .gitignore
+archive/
