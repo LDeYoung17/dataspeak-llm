@@ -162,3 +162,4 @@ secrets.py
 app.py
 notebooks/.DS_Store
 .gitignore
+.gitattributes
