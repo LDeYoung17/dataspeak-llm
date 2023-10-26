@@ -1,4 +1,4 @@
-FROM alpine
+FROM ubuntu:20.04
 
 # Use an appropriate base image
 FROM python:3.11.5
