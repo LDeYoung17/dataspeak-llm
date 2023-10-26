@@ -1,12 +1,9 @@
 FROM alpine
 
-ADD --keep-git-dir=true https://github.com/LDeYoung17/dataspeak-llm/tree/work-branch/buildkit.git#v0.10.1 /buildkit
+RUN apk add --no-cache git
+RUN git clone --branch v0.10.1 --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
 
 WORKDIR /src
-
-RUN --mount=target=. \
-  make REVISION=$(git rev-parse HEAD) build
-
 
 EXPOSE 8000
 
