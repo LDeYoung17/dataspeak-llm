@@ -1,11 +1,9 @@
 FROM alpine
 
 RUN apk add --no-cache git
-RUN git clone --branch v0.10.1 --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
+RUN git clone --branch main --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
 
-WORKDIR /src
+EXPOSE 8080
 
-EXPOSE 8000
-
-# Start the app using serve command
-CMD [ "serve", "-s", "build" ]
+# Start the app using chainlit run command
+CMD [ "chainlit run" "app.py"]
