@@ -29,7 +29,7 @@ COPY UI/app.py /app/app.py
 ENV dataspeak-llm as runtime
 
 RUN apk add --no-cache git
-RUN git clone --branch main --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
+RUN git clone --branch work-branch --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
 
 
 
