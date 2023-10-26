@@ -1,7 +1,6 @@
-FROM phusion/baseimage
+FROM dataspeak as builder
 
-# Use an appropriate base image
-FROM python:3.11.5
+
 
 # Install chainlit and any other dependencies
 RUN pip install chainlit
@@ -25,7 +24,9 @@ RUN pip install bitsandbytes==0.41.0
 WORKDIR /app
 
 # Copy your application code into the container
-COPY UI/app.py /app/
+COPY UI/app.py /app/app.py
+
+ENV dataspeak as runtime
 
 RUN apk add --no-cache git
 RUN git clone --branch main --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
@@ -35,4 +36,4 @@ RUN git clone --branch main --single-branch https://github.com/LDeYoung17/datasp
 EXPOSE 8080
 
 # Start the app using chainlit run command
-CMD ["chainlit", "run", "app.py"]
+CMD ["chainlit", "run", "/app/app.py"]
