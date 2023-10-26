@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-FROM python: 3.11.5
+FROM python:3.11.5
 
 
 
