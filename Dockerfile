@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM phusion/baseimage
 
 # Use an appropriate base image
 FROM python:3.11.5
