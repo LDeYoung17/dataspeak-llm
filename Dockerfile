@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+FROM python: 3.11.5
+
 
 
 # Install chainlit and any other dependencies
