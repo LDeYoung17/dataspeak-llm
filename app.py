@@ -43,7 +43,7 @@ def create_storage():
         index = load_index_from_storage(storage_context)
     except:
     
-        embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
+        '''embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
 
         device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
 
@@ -58,7 +58,7 @@ def create_storage():
             train_body_answers
         ]
 
-        embeddings = embed_model.embed_documents(docs)
+        embeddings = embed_model.embed_documents(docs)'''
         pinecone_api = secrets.get('PINECONE_API') 
         pinecone_env = secrets.get('PINECONE_ENVIRON')
         pinecone.init(
@@ -68,18 +68,18 @@ def create_storage():
 
         index_name = 'dataspeak-qa'
 
-        if index_name not in pinecone.list_indexes():
+       '''if index_name not in pinecone.list_indexes():
             pinecone.create_index(
             index_name,
             dimension=len(embeddings[0]),
             metric='cosine'
-        )
+        )'''
 
         while not pinecone.describe_index(index_name).status['ready']:
             time.sleep(1)
         index = pinecone.Index(index_name)
 
-        index_info = index.describe_index_stats()
+        '''index_info = index.describe_index_stats()
 
         if index_info['total_vector_count'] == 0:
             batch_size = 32
@@ -110,9 +110,8 @@ def create_storage():
                 else:
                     index.upsert(vectors=zip(ids, embeds, metadata))
         else:
-            print('Vectors already exist. Please use existing index or start over.')
+            print('Vectors already exist. Please use existing index or start over.')'''
 
-        index.storage_context.persist()
 
 
 
@@ -217,17 +216,22 @@ async def start():
         retriever=vectorstore.as_retriever(k=5)
     )
 
-    cl.user_session.set("query_engine", question_answer)
+    #cl.user_session.set("query_engine", question_answer)
+
+    return question_answer
 
     
     
 @cl.on_message
 async def main(message: cl.Message):
 
-    await cl.AskUserMessage(content="Welcome! How can I help you today?", timeout=30).send()
+    embeddings = await start() 
 
-    query_engine = cl.user_session.get("query_engine")
-    response = await cl.make_async(query_engine.query)(message.content)
+    #await cl.AskUserMessage(content="Welcome! How can I help you today?", timeout=30).send()
+
+    #query_engine = cl.user_session.get("query_engine")
+    cb = cl.LangchainCallbackHandler(stream_final_answer=True)
+    response = await cl.make_async(embeddings.query)(message.content, callbacks=[cb])
 
     response_message = cl.Message(content="")
 
