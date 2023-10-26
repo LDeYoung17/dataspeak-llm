@@ -1,4 +1,4 @@
-FROM dataspeak-llm as builder
+FROM python 3.11.5 as builder
 
 
 
@@ -26,7 +26,7 @@ WORKDIR /app
 # Copy your application code into the container
 COPY UI/app.py /app/app.py
 
-ENV dataspeak-llm as runtime
+ENV dataspeak as runtime
 
 RUN apk add --no-cache git
 RUN git clone --branch work-branch --single-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
