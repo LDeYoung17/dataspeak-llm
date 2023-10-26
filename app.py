@@ -36,81 +36,76 @@ train_body_answers = small_train_dataset['body_answer']
 @cl.cache
 @cl.on_chat_start
 def create_storage():
-    try:
-    # rebuild storage context
-        storage_context = StorageContext.from_defaults(persist_dir="./storage")
-    # load index
-        index = load_index_from_storage(storage_context)
-    except:
+
     
-        '''embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
+    '''embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
 
-        device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
+    device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
 
-        embed_model = HuggingFaceEmbeddings(
+    embed_model = HuggingFaceEmbeddings(
         model_name=embed_model_id,
         model_kwargs={'device': device},
         encode_kwargs={'device': device, 'batch_size': 32}
     )
 
-        docs = [
+    docs = [
 
-            train_body_answers
-        ]
+    train_body_answers
+    ]
 
-        embeddings = embed_model.embed_documents(docs)'''
-        pinecone_api = secrets.get('PINECONE_API') 
-        pinecone_env = secrets.get('PINECONE_ENVIRON')
-        pinecone.init(
-            api_key=os.environ.get(pinecone_api) or pinecone_api,
-            environment=os.environ.get(pinecone_env) or pinecone_env
-        )
+    embeddings = embed_model.embed_documents(docs)'''
+    pinecone_api = secrets.get('PINECONE_API') 
+    pinecone_env = secrets.get('PINECONE_ENVIRON')
+    pinecone.init(
+        api_key=os.environ.get(pinecone_api) or pinecone_api,
+        environment=os.environ.get(pinecone_env) or pinecone_env
+    )
 
-        index_name = 'dataspeak-qa'
+    index_name = 'dataspeak-qa'
 
-       '''if index_name not in pinecone.list_indexes():
-            pinecone.create_index(
-            index_name,
-            dimension=len(embeddings[0]),
-            metric='cosine'
-        )'''
+    '''if index_name not in pinecone.list_indexes():
+        pinecone.create_index(
+        index_name,
+        dimension=len(embeddings[0]),
+        metric='cosine'
+    )'''
 
-        while not pinecone.describe_index(index_name).status['ready']:
-            time.sleep(1)
-        index = pinecone.Index(index_name)
+    while not pinecone.describe_index(index_name).status['ready']:
+        time.sleep(1)
+    index = pinecone.Index(index_name)
 
-        '''index_info = index.describe_index_stats()
+     '''index_info = index.describe_index_stats()
 
-        if index_info['total_vector_count'] == 0:
-            batch_size = 32
-            max_metadata_size = 39000
+    if index_info['total_vector_count'] == 0:
+        batch_size = 32
+        max_metadata_size = 39000
 
-            for i in range(0, len(small_train_dataset), batch_size):
-                i_end = min(len(small_train_dataset), i + batch_size)
-                batch = small_train_dataset.iloc[i:i_end]
-                ids = [f"{x['id_question']}-{x['id_answer']}" for i, x in batch.iterrows()]
-                texts = [(x['body_answer']) for i, x in batch.iterrows()]
-                embeds = embed_model.embed_documents(texts)
-                metadata = [
-                    {'text': x['body_answer']}
-                    for i, x in batch.iterrows()
-                ]
+        for i in range(0, len(small_train_dataset), batch_size):
+            i_end = min(len(small_train_dataset), i + batch_size)
+            batch = small_train_dataset.iloc[i:i_end]
+            ids = [f"{x['id_question']}-{x['id_answer']}" for i, x in batch.iterrows()]
+            texts = [(x['body_answer']) for i, x in batch.iterrows()]
+            embeds = embed_model.embed_documents(texts)
+            metadata = [
+                {'text': x['body_answer']}
+                for i, x in batch.iterrows()
+            ]
 
-                metadata_json = json.dumps(metadata, ensure_ascii=False)
-                metadata_size = sys.getsizeof(metadata_json)
+            metadata_json = json.dumps(metadata, ensure_ascii=False)
+            metadata_size = sys.getsizeof(metadata_json)
 
-                if metadata_size > max_metadata_size:
+            if metadata_size > max_metadata_size:
 
-                    truncated_metadata = metadata[:20000] # Truncate text
+                truncated_metadata = metadata[:20000] # Truncate text
 
-                    truncated_metadata_json = json.dumps(truncated_metadata, ensure_ascii=False)
-                    truncated_metadata_size = sys.getsizeof(truncated_metadata_json)
+                truncated_metadata_json = json.dumps(truncated_metadata, ensure_ascii=False)
+                truncated_metadata_size = sys.getsizeof(truncated_metadata_json)
 
-                    index.upsert(vectors=zip(ids, embeds, truncated_metadata))
-                else:
-                    index.upsert(vectors=zip(ids, embeds, metadata))
-        else:
-            print('Vectors already exist. Please use existing index or start over.')'''
+                index.upsert(vectors=zip(ids, embeds, truncated_metadata))
+            else:
+                index.upsert(vectors=zip(ids, embeds, metadata))
+    else:
+        print('Vectors already exist. Please use existing index or start over.')'''
 
 
 
