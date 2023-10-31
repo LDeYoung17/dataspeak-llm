@@ -170,3 +170,4 @@ UI/.DS_Store
 .vscode/
 AWSCLIV2.pkg
 UI/my_package/.DS_Store
+Dockerfile
