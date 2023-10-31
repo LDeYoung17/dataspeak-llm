@@ -1,13 +1,13 @@
-pip install --upgrade pip
-torch==2.1.0
-torchvision==0.16.0
+pip==23.3.1
+torch
+torchvision
 tensorflow==2.14.0
 sentence-transformers==2.2.2
 transformers==4.31.0
 sentence-transformers==2.2.2
 pinecone-client==2.2.2
-install datasets==2.14.0
-install accelerate==0.21.0
+datasets==2.14.0
+accelerate==0.21.0
 einops==0.6.1
 langchain==0.0.240
 xformers==0.0.20

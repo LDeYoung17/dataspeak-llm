@@ -21,138 +21,141 @@ import json
 from my_package import secrets 
 
 
-@cl.cache
 @cl.on_chat_start
-def create_storage():
+def start():
+#cl.init()
+  embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
 
-    pinecone_api = secrets.get('PINECONE_API') 
-    pinecone_env = secrets.get('PINECONE_ENVIRON')
-    pinecone.init(
-        api_key=os.environ.get(pinecone_api) or pinecone_api,
-        environment=os.environ.get(pinecone_env) or pinecone_env
-    )
+  device = f'cuda:{cuda.current_device()}'
+  #if cuda.is_available() else 'cpu'
 
-    index_name = 'dataspeak-qa'
+  embed_model = HuggingFaceEmbeddings(
+      model_name=embed_model_id,
+      model_kwargs={'device': device},
+      encode_kwargs={'batch_size': 32}
+  )
+
+  #pinecone_api = '5833daf1-6582-4254-92eb-367ec190841c'
+  #pinecone_env = 'gcp-starter'
+  pinecone.init(
+      api_key=secrets.get('PINECONE_API'),
+      environment=secrets.get('PINECONE_ENVIRON')
+  )
+
+  index_name = 'dataspeak-qa'
 
 
-    while not pinecone.describe_index(index_name).status['ready']:
-        time.sleep(1)
-    index = pinecone.Index(index_name)
+  while not pinecone.describe_index(index_name).status['ready']:
+      time.sleep(1)
+  index = pinecone.Index(index_name)
 
-async def start():
+  model_id = 'meta-llama/Llama-2-13b-chat-hf'
 
-    message_history = ChatMessageHistory()
+  device = f'cuda:{cuda.current_device()}'
+  #if cuda.is_available() else 'cpu'
+  bnb_config = transformers.BitsAndBytesConfig(
+      load_in_4bit=True,
+      bnb_4bit_quant_type='nf4',
+      bnb_4bit_use_double_quant=True,
+      #llm_int8_enable_fp32_cpu_offload=True,
+      bnb_4bit_compute_dtype=bfloat16
+  )
 
-    memory = ConversationBufferMemory(
-        memory_key="chat_history",
-        output_key="answer",
-        chat_memory=message_history,
-        return_messages=True,
-    )
 
-    model_id = 'meta-llama/Llama-2-13b-chat-hf'
+  hf_auth = secrets.get('HUGGING_FACE_TOKEN')
+  model_config = transformers.AutoConfig.from_pretrained(
+      model_id,
+      use_auth_token=hf_auth
+  )
 
-    device = f'cuda:{cuda.current_device()}' if cuda.is_available() else 'cpu'
-    bnb_config = transformers.BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type='nf4',
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=bfloat16
-    )
+  model = transformers.AutoModelForCausalLM.from_pretrained(
+      model_id,
+      trust_remote_code=True,
+      config=model_config,
+      quantization_config=bnb_config,
+      device_map='auto',
+      use_auth_token=hf_auth
+  )
 
-    hf_key = secrets.get('HUGGING_FACE_TOKEN')
+  model.eval()
 
-    hf_auth = hf_key
-    model_config = transformers.AutoConfig.from_pretrained(
-        model_id,
-        use_auth_token=hf_auth
-    )
+  tokenizer = transformers.AutoTokenizer.from_pretrained(
+      model_id,
+      #cache_dir=cache_dir,
+      use_auth_token=hf_auth
+  )
 
-    model = transformers.AutoModelForCausalLM.from_pretrained(
-        model_id,
-        #cache_dir = cache_dir,
-        trust_remote_code=True,
-        config=model_config,
-        quantization_config=bnb_config,
-        device_map='auto',
-        use_auth_token=hf_auth
-    )
+  stop_list = ['\nContext:', '\n```\n', '\nAnswer:']
 
-    model.eval()
+  stop_token_ids = [tokenizer(x)['input_ids'] for x in stop_list]
+  stop_token_ids = [torch.LongTensor(x).to(device) for x in stop_token_ids]
 
-    #print(f"Model loaded on {device}")
+  class StopOnTokens(StoppingCriteria):
+      def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+          for stop_ids in stop_token_ids:
+              if torch.eq(input_ids[0][-len(stop_ids):], stop_ids).all():
+                  return True
+              else:
+                return False
 
-    tokenizer = transformers.AutoTokenizer.from_pretrained(
-        model_id,
-        #cache_dir=cache_dir,
-        use_auth_token=hf_auth
-    )
+  stopping_criteria = StoppingCriteriaList([StopOnTokens()])
 
-    stop_list = ['\nContext:', '\n```\n', '\nAnswer:']
+  generate_text = transformers.pipeline(
+      model=model, tokenizer=tokenizer,
+      return_full_text=True,
+      task='text-generation',
+      temperature=0.0,
+      max_new_tokens=512,  # max number of tokens to generate in the output
+      repetition_penalty=1.1  # without this output begins repeating
+  )
 
-    stop_token_ids = [tokenizer(x)['input_ids'] for x in stop_list]
-    stop_token_ids = [torch.LongTensor(x).to(device) for x in stop_token_ids]
+  llm = HuggingFacePipeline(pipeline=generate_text)
 
-    class StopOnTokens(StoppingCriteria):
-        def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
-            for stop_ids in stop_token_ids:
-                if torch.eq(input_ids[0][-len(stop_ids):], stop_ids).all():
-                    return True
-            return False
+  text_field = 'text'
 
-    stopping_criteria = StoppingCriteriaList([StopOnTokens()])
+  vectorstore = Pinecone(
+      index,embed_model.embed_query, text_field
+  )
 
-    generate_text = transformers.pipeline(
-        model=model, tokenizer=tokenizer,
-        return_full_text=True,
-        task='text-generation',
-        temperature=0.0,
-        max_new_tokens=512,  # max number of tokens to generate in the output
-        repetition_penalty=1.1  # without this output begins repeating
-    )
 
-    llm = HuggingFacePipeline(pipeline=generate_text)
+  memory = ConversationBufferMemory(memory_key="chat_history", return_messages= True, output_key='answer')
 
-    text_field = 'text'
+  retriever=vectorstore.as_retriever(k=5)
+  chain = ConversationalRetrievalChain.from_llm(llm, chain_type="stuff", retriever=retriever, memory=memory, return_source_documents=True)
 
-    vectorstore = Pinecone(
-        create_storage.index, create_storage.embed_model.embed_query, text_field
-    )
+  question_answer = RetrievalQA.from_chain_type(
+      llm=llm, chain_type='stuff',
+      retriever=vectorstore.as_retriever(k=5), memory=memory
+      #, return_source_documents=True
+  )
 
-    query = 'tell me about python'
+  cl.user_session.set("chain", chain)
 
-    search_result = retriever=vectorstore.similarity_search(query,
-        k=5  # returns top 5 most relevant chunks of text
-    )
 
-    question_answer = RetrievalQA.from_chain_type(
-        llm=llm, chain_type='stuff',
-        retriever=vectorstore.as_retriever(k=5)
-    )
-
-    #cl.user_session.set("query_engine", question_answer)
-
-    return question_answer
-
-    
-    
 @cl.on_message
 async def main(message: cl.Message):
 
-    embeddings = await start() 
+    chain = cl.user_session.get("chain")  # type: ConversationalRetrievalChain
+    cb = cl.AsyncLangchainCallbackHandler()
 
-    #await cl.AskUserMessage(content="Welcome! How can I help you today?", timeout=30).send()
+    res = await chain.acall(message.content, callbacks=[cb])
+    answer = res["answer"]
+    source_documents = res["source_documents"]  # type: List[Document]
 
-    #query_engine = cl.user_session.get("query_engine")
-    cb = cl.LangchainCallbackHandler(stream_final_answer=True)
-    response = await cl.make_async(embeddings.query)(message.content, callbacks=[cb])
+    text_elements = []  # type: List[cl.Text]
 
-    response_message = cl.Message(content="")
+    if source_documents:
+        for source_idx, source_doc in enumerate(source_documents):
+            source_name = f"source_{source_idx}"
+            # Create the text element referenced in the message
+            text_elements.append(
+                cl.Text(content=source_doc.page_content, name=source_name)
+            )
+        source_names = [text_el.name for text_el in text_elements]
 
-    for token in response.response_gen:
-        await response_message.stream_token(token=token)
+        if source_names:
+            answer += f"\nSources: {', '.join(source_names)}"
+        else:
+            answer += "\nNo sources found"
 
-    if response.response_txt:
-        response_message.content = response.response_txt
-
-    await response_message.send()
+    await cl.Message(content=answer, elements=text_elements).send()
