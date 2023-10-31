@@ -1,7 +1,20 @@
-FROM alpine
+# Use an appropriate base image, e.g., python:3.10-slim
+FROM python:3.11.5
 
-# Clone the repository to your local machine
-RUN apk add --no-cache git
-RUN git clone --single-branch --branch work-branch https://github.com/LDeYoung17/dataspeak-llm.git /buildkit
+# Set environment variables (e.g., set Python to run in unbuffered mode)
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /src
+# Set the working directory
+WORKDIR /app
+
+# Copy your application's requirements and install them
+COPY requirements.txt /app/
+
+RUN pip install -r /app/requirements.txt
+
+# Copy your application code into the container
+COPY . /app/
+
+EXPOSE 8080
+
+CMD ["python", "-m", "chainlit", "run", "app.py", "-h", "--port", "8080"]
