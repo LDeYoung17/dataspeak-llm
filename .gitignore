@@ -164,3 +164,9 @@ notebooks/.DS_Store
 .gitattributes
 archive/
 dataspeak
+.dockerignore
+UI/.DS_Store
+.DS_Store
+.vscode/
+AWSCLIV2.pkg
+UI/my_package/.DS_Store
