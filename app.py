@@ -18,7 +18,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import time
 import sys
 import json
-from my_package import secrets 
+#from my_package import secrets 
 
 
 @cl.on_chat_start
@@ -38,8 +38,8 @@ def start():
   #pinecone_api = '5833daf1-6582-4254-92eb-367ec190841c'
   #pinecone_env = 'gcp-starter'
   pinecone.init(
-      api_key=secrets.get('PINECONE_API'),
-      environment=secrets.get('PINECONE_ENVIRON')
+      api_key=os.environ.get('PINECONE_API'),
+      environment=os.environ.get('PINECONE_ENVIRON')
   )
 
   index_name = 'dataspeak-qa'
@@ -62,7 +62,7 @@ def start():
   )
 
 
-  hf_auth = secrets.get('HUGGING_FACE_TOKEN')
+  hf_auth = os.environ.get('HUGGING_FACE_TOKEN')
   model_config = transformers.AutoConfig.from_pretrained(
       model_id,
       use_auth_token=hf_auth
