@@ -3,6 +3,9 @@ FROM python:3.11.5
 
 # Set environment variables (e.g., set Python to run in unbuffered mode)
 ENV PYTHONUNBUFFERED 1
+ENV PINECONE_API: "5833daf1-6582-4254-92eb-367ec190841c" 
+ENV PINECONE_ENVIRON: "gcp-starter"
+ENV HUGGING_FACE_TOKEN: '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'
 
 # Set the working directory
 WORKDIR /app
