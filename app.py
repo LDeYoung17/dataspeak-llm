@@ -18,12 +18,10 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import time
 import sys
 import json
-#from my_package import secrets 
 
 
 @cl.on_chat_start
 def start():
-#cl.init()
   embed_model_id = 'sentence-transformers/all-MiniLM-L6-v2'
 
   device = f'cuda:{cuda.current_device()}'
@@ -35,8 +33,7 @@ def start():
       encode_kwargs={'batch_size': 32}
   )
 
-  #pinecone_api = '5833daf1-6582-4254-92eb-367ec190841c'
-  #pinecone_env = 'gcp-starter'
+
   pinecone.init(
       api_key=os.environ.get('PINECONE_API'),
       environment=os.environ.get('PINECONE_ENVIRON')
@@ -57,7 +54,6 @@ def start():
       load_in_4bit=True,
       bnb_4bit_quant_type='nf4',
       bnb_4bit_use_double_quant=True,
-      #llm_int8_enable_fp32_cpu_offload=True,
       bnb_4bit_compute_dtype=bfloat16
   )
 
@@ -81,7 +77,6 @@ def start():
 
   tokenizer = transformers.AutoTokenizer.from_pretrained(
       model_id,
-      #cache_dir=cache_dir,
       use_auth_token=hf_auth
   )
 
