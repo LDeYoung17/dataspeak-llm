@@ -1,4 +1,4 @@
-# dataspeak-llm
+# Generative Chatbot Using Large Language Model
 
 <h2>Summary</h2>
 
