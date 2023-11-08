@@ -2,7 +2,7 @@
 
 <h2>Summary</h2>
 
-This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses a model from SentenceTransformer and then RetrievalQA to generate Question/Answer responses.
+This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses a model from SentenceTransformer and then ConversationalRetrievalChain to generate Question/Answer responses.
 <h2>Table of Contents</h2>
 
       1. Exploratory Data Analysis(notebooks > EDA.ipynb)
@@ -15,7 +15,7 @@ This project is for an externship to create a customer service chatbot. It is tr
             g) Data cleaning
             h) Create new CSV
       
-      1. Machine Learning Models (notebooks > ML.ipynb)
+      2. Machine Learning Models (notebooks > ML.ipynb)
             
             a) Package installation
             b) Library importation
@@ -26,13 +26,19 @@ This project is for an externship to create a customer service chatbot. It is tr
             g) Create the pipeline
             h) Query based on the trained model
 
+      3. Application (app.py)
+            a) Library Importations
+            b)The initial part of this file (cl.on_chat_start) is the same as ML.ipynb
+            c) The second part of this file (cl.on_message) is the part of the application where the chatbot responds to a question asked.
+      
+
 <h2>Local Access</h2>
 
 This project needs to be run on the GPU of your choice. The installations necessary are built into the project.
 
 <h2>Plans for Updates</h2>
 
-This project is ongoing.
+There are no plans for updates at this time.
 
 <h2>Sample Graph</h2>
 
