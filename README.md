@@ -45,6 +45,10 @@ There are no plans for updates at this time.
 
 ![image](https://github.com/LDeYoung17/dataspeak-llm/assets/70500225/7dd6482c-4ad2-4c71-9876-df71c2234190)
 
+<h2>Demonstration Video</h2>
+
+https://github.com/LDeYoung17/dataspeak-llm/assets/70500225/54880afc-d58f-4bf8-a006-c6bb062cecb0
+
 
 <h2>Portfolio Link</h2>
 
