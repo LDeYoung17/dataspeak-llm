@@ -2,7 +2,8 @@
 
 <h2>Summary</h2>
 
-This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses a model from SentenceTransformer and then ConversationalRetrievalChain to generate Question/Answer responses.
+This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses a model from SentenceTransformer and then ConversationalRetrievalChain to generate Question/Answer responses. The UI was built using Chainlit and deployed initially on Google Colab. After that, I created a Docker image and then deployed on AWS.
+
 <h2>Table of Contents</h2>
 
       1. Exploratory Data Analysis(notebooks > EDA.ipynb)
@@ -43,3 +44,10 @@ There are no plans for updates at this time.
 <h2>Sample Graph</h2>
 
 ![image](https://github.com/LDeYoung17/dataspeak-llm/assets/70500225/7dd6482c-4ad2-4c71-9876-df71c2234190)
+
+
+<h2>Portfolio Link</h2>
+
+https://ldeyoung17.github.io/
+
+This is my portfolio where all my projects, including this one, can be found, as well as more information about my experience as a Data Scientist and Software Engineer.
