@@ -15,7 +15,7 @@ This project is for an externship to create a customer service chatbot. It is tr
             e) Merging datasets into one dataframe
             f) EDA
             g) Data cleaning
-            h) Create new CSV
+            h) Create a new CSV
       
       2. Machine Learning Models (notebooks > ML.ipynb)
             
@@ -36,7 +36,15 @@ This project is for an externship to create a customer service chatbot. It is tr
 
 <h2>Local Access</h2>
 
-This project needs to be run on the GPU of your choice. The installations necessary are built into the project.
+This project will require Python 3.11.5 or later (if available).
+
+All packages required can be installed from the requirements.txt file by executing the command 'pip install -r requirements.txt'
+
+Please note that a HuggingFace API token, a Pinecone API token, and a Pinecone environment name will be required for this project to run correctly.
+
+To run the app.py file and the Jupyter notebooks, a GPU must be used due to the size of the LLM and the size of the data. It is not recommended that this be run on a local machine.
+
+To simulate running locally, Google Colab can be used with one of the GPU options.
 
 <h2>Plans for Updates</h2>
 
