@@ -2,7 +2,8 @@
 
 <h2>Summary</h2>
 
-This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses a model from SentenceTransformer and then ConversationalRetrievalChain to generate Question/Answer responses. The UI was built using Chainlit and deployed initially on Google Colab. After that, I created a Docker image and then deployed on AWS.
+This project is for an externship to create a customer service chatbot. It is trained on data from Stack Overflow, specifically questions about Python. It uses models from SentenceTransformer and Llama2, then leverages ConversationalRetrievalChain in order to generate Question/Answer responses. The UI was built using Chainlit and deployed initially on Google Colab. After that, I created a Docker image and then deployed on AWS.
+
 
 <h2>Table of Contents</h2>
 
