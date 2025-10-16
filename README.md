@@ -63,4 +63,4 @@ https://github.com/LDeYoung17/dataspeak-llm/assets/70500225/54880afc-d58f-4bf8-a
 
 https://ldeyoung17.github.io/
 
-This is my portfolio where all my projects, including this one, can be found, as well as more information about my experience as a Data Scientist and Software Engineer.
+This is my portfolio where all my projects, including this one, can be found, as well as more information about my experience as a Data Scientist and Software Engineer, and a little about myself.
